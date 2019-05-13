@@ -9,7 +9,7 @@ thermistor = AnalogIn(ads, ADS.P0)
 ads.gain = 1
 
 # thermistor resistance
-R = 10000 / (65535/thermistor.value - 1)
+
 
 def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     import math
@@ -18,5 +18,5 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
-# Read the temperature
+R = 10000 / (65535/thermistor.value - 1)
 steinhart_temperature_C(R)
