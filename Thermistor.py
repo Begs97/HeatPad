@@ -15,7 +15,8 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
-r = 10000 / (65535/thermistor.value - 1)
-steinhart_temperature_C(r)
+R = 10000 / (65535/thermistor.value - 1)
+print('Thermistor resistance: {} ohms'.format(R))
 
+steinhart_temperature_C(R)
 
