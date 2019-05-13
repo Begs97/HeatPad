@@ -8,9 +8,6 @@ ads = ADS.ADS1115(i2c)
 thermistor = AnalogIn(ads, ADS.P0)
 ads.gain = 1
 
-# thermistor resistance
-
-
 def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     import math
     steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
