@@ -16,6 +16,5 @@ while True:
         steinhart = math.log(R / 10000) / 3950      # log(R/Ro) / beta
         steinhart += 1.0 / (25 + 273.15)         # log(R/Ro) / beta + 1/To
         steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
-        return steinhart
-
-time.sleep(0.5)
+        Print (steinhart)
+        time.sleep(0.5)
