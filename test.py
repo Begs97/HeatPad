@@ -18,8 +18,7 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 thermistor = AnalogIn(ads, ADS.P0)
 R = 10000 / (65535/thermistor.value - 1)
 
-while True:
-    steinhart_temperature_C(R)
+steinhart_temperature_C(R)
     
     
 
