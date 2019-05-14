@@ -1,22 +1,37 @@
-import board
-import busio
-i2c = busio.I2C(board.SCL, board.SDA)
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-ads = ADS.ADS1115(i2c)
+import math
+import analogio
 
-thermistor = AnalogIn(ads, ADS.P0)
-ads.gain = 1
+class Thermistor:
+    """Thermistor driver"""
 
-def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
-    import math
-    steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
-    steinhart += 1.0 / (To + 273.15)         # log(R/Ro) / beta + 1/To
-    steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
-    return steinhart
+    def __init__(self, pin, series_resistor, nominal_resistance, nominal_temperature,
+                 b_coefficient, *, high_side=True):
+        # pylint: disable=too-many-arguments
+        self.pin = analogio.AnalogIn(pin)
+        self.series_resistor = series_resistor
+        self.nominal_resistance = nominal_resistance
+        self.nominal_temperature = nominal_temperature
+        self.b_coefficient = b_coefficient
+        self.high_side = high_side
 
-R = 10000 / (65535/thermistor.value - 1)
-print('Thermistor resistance: {} ohms'.format(R))
+    @property
+    def temperature(self):
+        """The temperature of the thermistor in celsius"""
+        if self.high_side:
+            # Thermistor connected from analog input to high logic level.
+            reading = self.pin.value / 64
+            reading = (1023 * self.series_resistor) / reading
+            reading -= self.series_resistor
+        else:
+            # Thermistor connected from analog input to ground.
+            reading = self.series_resistor / (65535.0/self.pin.value - 1.0)
 
-steinhart_temperature_C(R)
+        steinhart = reading / self.nominal_resistance  # (R/Ro)
+        steinhart = math.log(steinhart)               # ln(R/Ro)
+        steinhart /= self.b_coefficient                # 1/B * ln(R/Ro)
+        steinhart += 1.0 / (self.nominal_temperature + 273.15)  # + (1/To)
+        steinhart = 1.0 / steinhart               # Invert
+        steinhart -= 273.15                       # convert to C
+
+        return steinhart
 
