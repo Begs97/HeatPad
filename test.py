@@ -7,6 +7,9 @@ from adafruit_ads1x15.analog_in import AnalogIn
 
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
+thermistor = AnalogIn(ads, ADS.P0)
+R = 10000 / (65535/thermistor.value - 1)
+
 
 def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     import math
@@ -15,11 +18,10 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
-thermistor = AnalogIn(ads, ADS.P0)
-R = 10000 / (65535/thermistor.value - 1)
 
 while True:
     print('Temperature = ', steinhart_temperature_C(R), 'C')
+    time.sleep(.5)
     
     
     
