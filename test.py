@@ -19,5 +19,13 @@ chan = AnalogIn(ads, ADS.P0)
 print("{:>5}\t{:>5}".format('raw', 'v'))
 
 while True:
-    print("{:>5}\t{:>5.3f}".format(chan.value, chan.voltage))
-    time.sleep(0.5)
+
+    def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
+     import math
+     steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
+     steinhart += 1.0 / (To + 273.15)         # log(R/Ro) / beta + 1/To
+     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
+     return steinhart
+
+print("{:>5}\t{:>5.3f}".format(chan.value, chan.voltage))
+time.sleep(0.5)
