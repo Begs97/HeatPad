@@ -21,7 +21,6 @@ R = 10000 / (65535/thermistor.value - 1)
 while True:
     print('Temperature = ', steinhart_temperature_C(R), 'C')
     
-    break
     
     
 
