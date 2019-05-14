@@ -19,9 +19,9 @@ thermistor = AnalogIn(ads, ADS.P0)
 R = 10000 / (65535/thermistor.value - 1)
 
 while True:
-    Print("Temperature = ", steinhart_temperature_C(R), "C")
+    print('Temperature = ', steinhart_temperature_C(R), 'C')
     
-    Break
+    break
     
     
 
