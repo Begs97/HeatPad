@@ -24,9 +24,4 @@ while True:
     time.sleep(.5)
   
 
- if self.high_side:
-            # Thermistor connected from analog input to high logic level.
-            reading = self.pin.value / 64
-            reading = (1023 * self.series_resistor) / reading
-            reading -= self.series_resistor
     
