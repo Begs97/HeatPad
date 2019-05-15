@@ -19,8 +19,14 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 
 
 while True:
-    R = 10000 / ((65535 / thermistor.value) - 1)
+    R = ((65535 / thermistor.value) - 1) * 10000
     print('Temperature = ', steinhart_temperature_C(R), 'C', 'ADC =', thermistor.value, 'Resistance =', R)
     time.sleep(.5)
-    
+  
+
+ if self.high_side:
+            # Thermistor connected from analog input to high logic level.
+            reading = self.pin.value / 64
+            reading = (1023 * self.series_resistor) / reading
+            reading -= self.series_resistor
     
