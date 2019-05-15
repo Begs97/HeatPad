@@ -14,7 +14,7 @@ ads.gain = 1
 thermistor = AnalogIn(ads, ADS.P0)
 
 p = GPIO.PWM(12, 50)  # channel=12 frequency=50Hz
-# p.start(0)
+p.start(5)
 # p.ChangeDutyCycle(dc)
 # p.ChangeFrequency(freq)
 
