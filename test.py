@@ -4,12 +4,19 @@ import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12, GPIO.OUT)
 
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
 ads.gain = 1
 thermistor = AnalogIn(ads, ADS.P0)
 
+p = GPIO.PWM(12, 50)  # channel=12 frequency=50Hz
+# p.start(0)
+# p.ChangeDutyCycle(dc)
+# p.ChangeFrequency(freq)
 
 def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     import math
