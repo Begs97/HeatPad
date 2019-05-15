@@ -20,7 +20,7 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 
 while True:
     R = ((65535 / thermistor.value) - 1) * 10000
-    print('Temperature = ', steinhart_temperature_C(R), 'C', 'ADC =', thermistor.value, 'Resistance =', format(R, '.2f'))
+    print('Temperature = ', format(steinhart_temperature_C(R), '.2f', 'C', 'ADC =', thermistor.value, 'Resistance =', format(R, '.2f'))
     time.sleep(.5)
   
 
