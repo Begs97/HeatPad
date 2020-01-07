@@ -164,7 +164,7 @@ while 1:
     
     # Start the PWM output 
     p.start(OP)
-	time.sleep(0.5)
+    time.sleep(0.5)
 
     # Update the animation lists
     pointvalue_list.append(PV)
