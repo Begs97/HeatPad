@@ -1,3 +1,10 @@
+###############################################################
+#                    HeatPad Controller V2                    #
+#                      By Joseph Begley                       #
+###############################################################
+
+#######################   Libraries  ##########################
+
 import matplotlib
 import board
 import busio
@@ -8,20 +15,46 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
-#from scipy.interpolate import spline
-from scipy.interpolate import make_interp_spline
 import RPi.GPIO as GPIO
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+from scipy.interpolate import make_interp_spline
 
-####################  GPIO Configuration  ######################
+####################  GPIO Configuration  #####################
 
+# Set GPIO to broadcom numbering and ignore warnings
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
+
+# Set PWM on pin 12 with a frequency of 100 Hz
 GPIO.setup(12, GPIO.OUT)
 p = GPIO.PWM(12,100)
+
+# Set Pins 22 & 23 as inputs for the pushbuttons
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-###################  Push Button Callbacks  ########################
+#####################  ADC Configuration  #####################
+
+# Establish communication to ADS1115
+i2c = busio.I2C(board.SCL, board.SDA)
+
+# Define the ADS1115 driver
+ads = ADS.ADS1115(i2c)
+
+# Define single ended input on channel 0
+chan0 = AnalogIn(ads, ADS.P0)
+ads.gain = 1
+
+##########  Thermistor to Temperature Conversion  #############
+
+def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
+    steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
+    steinhart += 1.0 / (To + 273.15)         # log(R/Ro) / beta + 1/To
+    steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
+    return steinhart
+
+#################  Push Button Callbacks  #####################
 
 def increase_sp_callback(channel):
     global SP
@@ -42,61 +75,124 @@ def decrease_sp_callback(channel):
         SP -= 1
         print("decrease detected")
         print("SP=", SP)
-
+    
 GPIO.add_event_detect(22, GPIO.FALLING, callback=increase_sp_callback)
 GPIO.add_event_detect(23, GPIO.FALLING, callback=decrease_sp_callback)
 
-#######################  ADC Configuration  #####################
 
-# Establish communication to ADS1115
-i2c = busio.I2C(board.SCL, board.SDA)
+################  Create Figure for Plotting  #################
 
-# Import ADS1115 driver and define it
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-ads = ADS.ADS1115(i2c)
-
-# Define single ended input on channel 0
-chan0 = AnalogIn(ads, ADS.P0)
-ads.gain = 1
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.yaxis.tick_right()
+xs = []
+ys = []
+y2 = []
 
 
-### PID CONFIG ###
+###################  Animation Function  ######################
 
-SP = 35
-P = 10
-I = 1
-D = 1
+def animate(i, xs, ys, y2):
 
-pid = PID.PID(P, I, D)
-pid.SetPoint = SP
-pid.setSampleTime(1)
-
-############################
-
-### Steinhart Conversion ###
-
-def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
-    steinhart = math.log(r / Ro) / beta      # log(R/Ro) / beta
-    steinhart += 1.0 / (To + 273.15)         # log(R/Ro) / beta + 1/To
-    steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
-    return steinhart
+    # Read temperature (Celsius) from the steinhart equation
+    global PV
+    R = ((26407 / chan0.value) - 1) * 10000
+    PV = steinhart_temperature_C(R)
     
-############################
+    # Add x and y to lists
+    xs.append(dt.datetime.now().strftime('%I:%M:%S %p'))
+    ys.append(PV)
+    y2.append(SP)
 
-### MAINLOOP ###
+    # Limit x and y lists to 10 items
+    xs = xs[-10:]
+    ys = ys[-10:]
+    y2 = y2[-10:]
+
+    # Draw x and y lists
+    ax.clear()
+    ax.plot(xs, ys, label='PV')
+    ax.plot(xs, y2, 'r--', label='SP')    
+    
+    # set the limit on the y-axis
+    plt.ylim(20,70)
+
+    # Format plot
+    plt.xticks(rotation=45, ha='right')
+    plt.subplots_adjust(bottom=0.30)
+    plt.title('ADS1115 Temperature over Time')
+    plt.ylabel('Temperature (deg C)')
+    
+
+##############  PID Controller Configuration #################
+
+SP = 20
+P = 1.2
+I = 2
+D = 0.005
+pid = PID.PID(P, I, D)
+
+pid.SetPoint = SP
+pid.setSampleTime(0.25)  # a second
+
+pointvalue_list = []
+setpoint_list = []
+time_list = []
+
+#####################  Main Loop  ############################
+
+print('PID controller is running..')
 
 while 1:
-	pid.SetPoint = SP
-	R = ((26407 / chan0.value) - 1) * 10000
-	temperature = steinhart_temperature_C(R)
-	pid.update(temperature)
-  
-	targetPwm = pid.output
-	targetPwm = max(min( int(targetPwm), 100 ),0)
+    
+    # Convert thermistor resistance to temperature for the point value and update the PID
+    pid.SetPoint = SP
+    R = ((26407 / chan0.value) - 1) * 10000
+    PV = steinhart_temperature_C(R)
+    pid.update(PV)
+    
+    # Define the PID output as an integer between 0-100 for PWM
+    OP = pid.output
+    OP = max(min( int(OP), 100 ),0)
+    
+    # Show the animated plot created for the PID
+    ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
+    plt.show()
 
-	print "Target: %.1f C | Current: %.1f C | PWM: %s %%"%(targetT, temperature, targetPwm)
-
-	# Set PWM expansion channel 0 to the target setting
-	p.ChangeDutyCycle(targetPwm)
+    # Print the PID values
+    print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
+    
+    # Start the PWM output 
+    p.start(OP)
 	time.sleep(0.5)
+
+    # Update the animation lists
+    pointvalue_list.append(PV)
+    setpoint_list.append(SP)
+    time_list.append(sampling_i)
+
+
+######################################
+
+print("pid controller done.")
+print("generating a report...")
+time_sm = np.array(time_list)
+time_smooth = np.linspace(time_sm.min(), time_sm.max(), 300)
+helper_x3 = make_interp_spline(time_list, pointvalue_list)
+feedback_smooth = helper_x3(time_smooth)
+
+fig1 = plt.gcf()
+fig1.subplots_adjust(bottom=0.15, left=0.1)
+
+plt.plot(time_smooth, feedback_smooth, color='red')
+plt.plot(time_list, setpoint_list, color='blue')
+plt.xlim((0, total_sampling))
+plt.ylim((min(feedback_list) - 0.5, max(feedback_list) + 0.5))
+plt.xlabel('time (s)')
+plt.ylabel('PID (PV)')
+plt.title('Temperature PID Controller')
+
+
+plt.grid(True)
+fig1.savefig('pid_temperature.png', dpi=100)
+print("finish")
