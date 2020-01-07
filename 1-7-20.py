@@ -87,9 +87,9 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 ### MAINLOOP ###
 
 while 1:
-  pid.SetPoint = SP
-  R = ((26407 / chan0.value) - 1) * 10000
-  temperature = steinhart_temperature_C(R)
+	pid.SetPoint = SP
+	R = ((26407 / chan0.value) - 1) * 10000
+	temperature = steinhart_temperature_C(R)
 	pid.update(temperature)
   
 	targetPwm = pid.output
