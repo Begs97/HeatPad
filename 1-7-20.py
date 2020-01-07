@@ -169,7 +169,7 @@ while 1:
     # Update the animation lists
     pointvalue_list.append(PV)
     setpoint_list.append(SP)
-    time_list.append(sampling_i)
+    #time_list.append(sampling_i)
 
 
 ######################################
