@@ -5,15 +5,19 @@
 
 #######################   Libraries  ##########################
 
-import matplotlib
 import board
 import busio
 import math
 import PID
 import time
 import datetime as dt
+import matplotlib
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+from matplotlib import style
 import numpy as np
 import RPi.GPIO as GPIO
 import adafruit_ads1x15.ads1115 as ADS
@@ -54,6 +58,11 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
+def get_PV()
+    # Read temperature (Celsius) from the steinhart equation
+    R = ((26407 / chan0.value) - 1) * 10000
+    PV = steinhart_temperature_C(R)
+
 #################  Push Button Callbacks  #####################
 
 def increase_sp_callback(channel):
@@ -92,12 +101,7 @@ y2 = []
 
 ###################  Animation Function  ######################
 
-def animate(i, xs, ys, y2):
-
-    # Read temperature (Celsius) from the steinhart equation
-    global PV
-    R = ((26407 / chan0.value) - 1) * 10000
-    PV = steinhart_temperature_C(R)
+def animate(i, xs, ys, y2):    
     
     # Add x and y to lists
     xs.append(dt.datetime.now().strftime('%I:%M:%S %p'))
@@ -141,9 +145,94 @@ time_list = []
 
 #####################  Main Loop  ############################
 
+class HeatPadapp(tk.Tk):
+
+    def __init__(self, *args, **kwargs):
+        
+        tk.Tk.__init__(self, *args, **kwargs)
+
+#       tk.Tk.iconbitmap(self, default="clienticon.ico")
+        tk.Tk.wm_title(self, "Heat Pad Controller")
+        
+        
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+
+        for F in (StartPage, PageOne, PageTwo, PageThree):
+
+            frame = F(container, self)
+
+            self.frames[F] = frame
+
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame(StartPage)
+
+    def show_frame(self, cont):
+
+        frame = self.frames[cont]
+        frame.tkraise()
+
+class PageOne(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = ttk.Label(self, text="Temperature", font=LARGE_FONT)
+        label.grid(pady=10,padx=10,row=0,column=1)
+        button1 = ttk.Button(self, text="Home",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.grid(pady=2,padx=5,row=6,column=1)
+
+        button2 = ttk.Button(self, text="Page Two",
+                            command=lambda: controller.show_frame(PageTwo))
+        button2.grid(pady=2,padx=5,row=7,column=1)
+        
+
+class PageTwo(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Page Two!!!", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        button1 = ttk.Button(self, text="Back to Home",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.pack()
+
+        button2 = ttk.Button(self, text="Page One",
+                            command=lambda: controller.show_frame(PageOne))
+        button2.pack()
+
+
+class PageThree(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Graph Page!", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        button1 = ttk.Button(self, text="Back to Home",
+                            command=lambda: controller.show_frame(StartPage))
+        button1.pack()        
+
+        canvas = FigureCanvasTkAgg(f, self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+    
+app = HeatPadapp()
+ani = animation.FuncAnimation(f, animate, interval=1000)
+app.mainloop()
+
+###############################################################
+
+
 print('PID controller is running..')
 
-while 1:
+def holder():
     
     # Convert thermistor resistance to temperature for the point value and update the PID
     pid.SetPoint = SP
@@ -155,16 +244,16 @@ while 1:
     OP = pid.output
     OP = max(min( int(OP), 100 ),0)
     
+    # Start the PWM output 
+    p.start(OP)
+    time.sleep(0.5)
+    
     # Show the animated plot created for the PID
     ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
     plt.show()
 
     # Print the PID values
     print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
-    
-    # Start the PWM output 
-    p.start(OP)
-    time.sleep(0.5)
 
     # Update the animation lists
     pointvalue_list.append(PV)
@@ -174,25 +263,27 @@ while 1:
 
 ######################################
 
-print("pid controller done.")
-print("generating a report...")
-time_sm = np.array(time_list)
-time_smooth = np.linspace(time_sm.min(), time_sm.max(), 300)
-helper_x3 = make_interp_spline(time_list, pointvalue_list)
-feedback_smooth = helper_x3(time_smooth)
 
-fig1 = plt.gcf()
-fig1.subplots_adjust(bottom=0.15, left=0.1)
+def dont_need():
+    print("pid controller done.")
+    print("generating a report...")
+    time_sm = np.array(time_list)
+    time_smooth = np.linspace(time_sm.min(), time_sm.max(), 300)
+    helper_x3 = make_interp_spline(time_list, pointvalue_list)
+    feedback_smooth = helper_x3(time_smooth)
 
-plt.plot(time_smooth, feedback_smooth, color='red')
-plt.plot(time_list, setpoint_list, color='blue')
-plt.xlim((0, total_sampling))
-plt.ylim((min(feedback_list) - 0.5, max(feedback_list) + 0.5))
-plt.xlabel('time (s)')
-plt.ylabel('PID (PV)')
-plt.title('Temperature PID Controller')
+    fig1 = plt.gcf()
+    fig1.subplots_adjust(bottom=0.15, left=0.1)
+
+    plt.plot(time_smooth, feedback_smooth, color='red')
+    plt.plot(time_list, setpoint_list, color='blue')
+    plt.xlim((0, total_sampling))
+    plt.ylim((min(feedback_list) - 0.5, max(feedback_list) + 0.5))
+    plt.xlabel('time (s)')
+    plt.ylabel('PID (PV)')
+    plt.title('Temperature PID Controller')
 
 
-plt.grid(True)
-fig1.savefig('pid_temperature.png', dpi=100)
-print("finish")
+    plt.grid(True)
+    fig1.savefig('pid_temperature.png', dpi=100)
+    print("finish")
