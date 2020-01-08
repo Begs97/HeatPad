@@ -23,6 +23,15 @@ import RPi.GPIO as GPIO
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from scipy.interpolate import make_interp_spline
+import tkinter as tk
+from tkinter import ttk
+
+LARGE_FONT= ("Verdana", 12)
+SMALL_FONT= ("Helvetica", 10)
+style.use("ggplot")
+
+f = Figure(figsize=(5,5), dpi=100)
+a = f.add_subplot(111)
 
 ####################  GPIO Configuration  #####################
 
