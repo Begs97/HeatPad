@@ -179,7 +179,7 @@ class HeatPadapp(tk.Tk):
                             bg=self.cget('bg'), relief='flat')
         frameLabel.pack()
         self.text.pack()
-        self.queue = queue.queue()
+        self.queue = queue.Queue()
         thread = SerialThread(self.queue)
         thread.start()
         self.process_serial()
