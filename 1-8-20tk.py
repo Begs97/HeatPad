@@ -209,9 +209,9 @@ class HeatPadapp(tk.Tk):
             try:
                 new=self.queue.get()
                 if value:
-                 self.text.delete(1.0, 'end')
-                value=False
-                 self.text.insert('end',new)
+                    self.text.delete(1.0, 'end')
+                    value=False
+                    self.text.insert('end',new)
             except queue.Empty:
                 pass
         self.after(100, self.process_serial)
