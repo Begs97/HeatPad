@@ -25,8 +25,9 @@ from adafruit_ads1x15.analog_in import AnalogIn
 from scipy.interpolate import make_interp_spline
 import tkinter as tk
 from tkinter import ttk
-import Queue
+import queue
 import serial
+import threading
 
 
 LARGE_FONT= ("Verdana", 12)
