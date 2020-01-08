@@ -25,6 +25,9 @@ from adafruit_ads1x15.analog_in import AnalogIn
 from scipy.interpolate import make_interp_spline
 import tkinter as tk
 from tkinter import ttk
+import Queue
+import serial
+
 
 LARGE_FONT= ("Verdana", 12)
 SMALL_FONT= ("Helvetica", 10)
@@ -168,6 +171,18 @@ class HeatPadapp(tk.Tk):
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
+        
+####
+        frameLabel = tk.Frame(self, padx=40, pady =40)
+        self.text = tk.Text(frameLabel, wrap='word', font='TimesNewRoman 37',
+                            bg=self.cget('bg'), relief='flat')
+        frameLabel.pack()
+        self.text.pack()
+        self.queue = Queue.Queue()
+        thread = SerialThread(self.queue)
+        thread.start()
+        self.process_serial()
+####
 
         self.frames = {}
 
@@ -250,7 +265,20 @@ class PageThree(tk.Frame):
         canvas = FigureCanvasTkAgg(f, self)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-    
+
+class SerialThread(threading.Thread):
+    def __init__(self, queue):
+        threading.Thread.__init__(self)
+        self.queue = queue
+    def run(self):
+        s = serial.Serial('/dev/ttyS0',9600)
+        s.write(str.encode('*00T%'))
+        time.sleep(0.2)
+        while True:
+            if s.inWaiting():
+                text = s.readline(s.inWaiting())
+                self.queue.put(text)
+
 app = HeatPadapp()
 ani = animation.FuncAnimation(f, animate, interval=1000)
 app.mainloop()
