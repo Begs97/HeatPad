@@ -25,8 +25,6 @@ from adafruit_ads1x15.analog_in import AnalogIn
 from scipy.interpolate import make_interp_spline
 import tkinter as tk
 from tkinter import ttk
-import queue
-import serial
 import threading
 
 
@@ -166,24 +164,12 @@ class HeatPadapp(tk.Tk):
 
 #       tk.Tk.iconbitmap(self, default="clienticon.ico")
         tk.Tk.wm_title(self, "Heat Pad Controller")
-        
+        HeatPadapp.geometry("320x240")
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        
-####
-        frameLabel = tk.Frame(self, padx=40, pady =40)
-        self.text = tk.Text(frameLabel, wrap='word', font='TimesNewRoman 37',
-                            bg=self.cget('bg'), relief='flat')
-        frameLabel.pack()
-        self.text.pack()
-        self.queue = queue.Queue()
-        thread = SerialThread(self.queue)
-        thread.start()
-        self.process_serial()
-####
 
         self.frames = {}
 
@@ -201,21 +187,6 @@ class HeatPadapp(tk.Tk):
 
         frame = self.frames[cont]
         frame.tkraise()
-      
-###
-    def process_serial(self):
-        value=True
-        while self.queue.qsize():
-            try:
-                new=self.queue.get()
-                if value:
-                    self.text.delete(1.0, 'end')
-                    value=False
-                    self.text.insert('end',new)
-            except queue.Empty:
-                pass
-        self.after(100, self.process_serial)
-###
 
 class StartPage(tk.Frame):
 
@@ -282,19 +253,6 @@ class PageThree(tk.Frame):
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-class SerialThread(threading.Thread):
-    def __init__(self, queue):
-        threading.Thread.__init__(self)
-        self.queue = queue
-    def run(self):
-        s = serial.Serial('/dev/ttyS0',9600)
-        s.write(str.encode('*00T%'))
-        time.sleep(0.2)
-        while True:
-            if s.inWaiting():
-                text = s.readline(s.inWaiting())
-                self.queue.put(text)
-
 app = HeatPadapp()
 ani = animation.FuncAnimation(f, animate, interval=1000)
 app.mainloop()
@@ -334,28 +292,3 @@ def holder():
 
 
 ######################################
-
-
-def dont_need():
-    print("pid controller done.")
-    print("generating a report...")
-    time_sm = np.array(time_list)
-    time_smooth = np.linspace(time_sm.min(), time_sm.max(), 300)
-    helper_x3 = make_interp_spline(time_list, pointvalue_list)
-    feedback_smooth = helper_x3(time_smooth)
-
-    fig1 = plt.gcf()
-    fig1.subplots_adjust(bottom=0.15, left=0.1)
-
-    plt.plot(time_smooth, feedback_smooth, color='red')
-    plt.plot(time_list, setpoint_list, color='blue')
-    plt.xlim((0, total_sampling))
-    plt.ylim((min(feedback_list) - 0.5, max(feedback_list) + 0.5))
-    plt.xlabel('time (s)')
-    plt.ylabel('PID (PV)')
-    plt.title('Temperature PID Controller')
-
-
-    plt.grid(True)
-    fig1.savefig('pid_temperature.png', dpi=100)
-    print("finish")
