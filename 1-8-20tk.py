@@ -201,6 +201,21 @@ class HeatPadapp(tk.Tk):
 
         frame = self.frames[cont]
         frame.tkraise()
+      
+###
+    def process_serial(self):
+        value=True
+        while self.queue.qsize():
+            try:
+                new=self.queue.get()
+                if value:
+                 self.text.delete(1.0, 'end')
+                value=False
+                 self.text.insert('end',new)
+            except queue.Empty:
+                pass
+        self.after(100, self.process_serial)
+###
 
 class StartPage(tk.Frame):
 
