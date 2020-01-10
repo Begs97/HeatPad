@@ -162,8 +162,7 @@ class HeatPadapp():
         self.master = master
         root.geometry("320x240")
         root.resizable(0,0)
-
-    def show_graph():
+        
         f = Figure(figsize=(5,5), dpi=100)
         a = f.add_subplot(111)
         a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
