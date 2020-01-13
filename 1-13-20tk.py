@@ -158,10 +158,7 @@ time_list = []
 #####################  Main Loop  ############################
 
 class HeatPadapp():
-    def __init__(self, master, *args, **kwargs):
-        self.master = master
-        master.geometry("320x240")
-        master.resizable(0,0)
+    def __init__(self, *args, **kwargs):
         
         f = Figure(figsize=(5,5), dpi=100)
         a = f.add_subplot(111)
