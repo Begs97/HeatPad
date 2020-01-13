@@ -157,10 +157,11 @@ time_list = []
 
 #####################  Main Loop  ############################
 
-class HeatPadapp(tk.Tk):
-    def __init__(self, *args, **kwargs):
-        Tk.geometry("320x240")
-        Tk.resizable(0,0)
+class HeatPadapp(root):
+    def __init__(self, root, *args, **kwargs):
+        root = Tk()
+        root.geometry("320x240")
+        root.resizable(0,0)
         
         f = Figure(figsize=(5,5), dpi=100)
         a = f.add_subplot(111)
@@ -171,9 +172,9 @@ class HeatPadapp(tk.Tk):
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
        
         
-app = HeatPadapp()
+
 ani = animation.FuncAnimation(f,animate, fargs=(xs, ys, y2), interval=1000)
-app.mainloop()
+root.mainloop()
     
 
 
