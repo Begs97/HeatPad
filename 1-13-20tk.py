@@ -171,11 +171,19 @@ class HeatPadapp():
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
        
-        
-root = tk.Tk()
-app = HeatPadapp(root)
-ani = animation.FuncAnimation(f,animate, fargs=(xs, ys, y2), interval=1000)
-app.mainloop()
+def main():
+
+    root = Tk()
+    gui = HeatPadapp(root)
+    ani = animation.FuncAnimation(f,animate, fargs=(xs, ys, y2), interval=1000)
+    root.minsize(320, 240)
+    root.resizable(0,0)
+    root.mainloop()  
+    
+if __name__ == '__main__':
+    main()
+    
+
     
 
 
