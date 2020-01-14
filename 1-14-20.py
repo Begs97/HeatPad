@@ -28,14 +28,6 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-
-LARGE_FONT= ("Verdana", 12)
-SMALL_FONT= ("Helvetica", 10)
-style.use("ggplot")
-
-f = Figure(figsize=(5,5), dpi=100)
-a = f.add_subplot(111)
-
 ####################  GPIO Configuration  #####################
 
 # Set GPIO to broadcom numbering and ignore warnings
@@ -110,6 +102,11 @@ xs = []
 ys = []
 y2 = []
 
+#################### Style for Plotting #######################
+
+LARGE_FONT= ("Verdana", 12)
+SMALL_FONT= ("Helvetica", 10)
+style.use("ggplot")
 
 ###################  Animation Function  ######################
 
@@ -156,32 +153,7 @@ setpoint_list = []
 time_list = []
 
 #####################  Main Loop  ############################
-
-class HeatPadapp():
-    def __init__(self, *args, **kwargs):
-        
-        f = Figure(figsize=(5,5), dpi=100)
-        a = f.add_subplot(111)
-        a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
-        
-        canvas = FigureCanvasTkAgg(f, self)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-       
-def main():
-
-    root = Tk()
-    gui = HeatPadapp(root)
-    ani = animation.FuncAnimation(f,animate, fargs=(xs, ys, y2), interval=1000)
-    root.minsize(640, 480)
-    root.resizable(0,0)
-    root.mainloop()  
-    
-if __name__ == '__main__':
-    main()
-    
-
-    
+ 
 
 
 ###############################################################
@@ -219,3 +191,6 @@ def holder():
 
 
 ######################################
+
+While 1:
+    holder()
