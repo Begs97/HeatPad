@@ -62,11 +62,6 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
     steinhart = (1.0 / steinhart) - 273.15   # Invert, convert to C
     return steinhart
 
-def get_PV():
-    # Read temperature (Celsius) from the steinhart equation
-    R = ((26407 / chan0.value) - 1) * 10000
-    PV = steinhart_temperature_C(R)
-
 #################  Push Button Callbacks  #####################
 
 def increase_sp_callback(channel):
@@ -112,11 +107,18 @@ style.use("ggplot")
 
 def animate(i, xs, ys, y2):
     
+    # Convert thermistor resistance to temperature for the point value
     R = ((26407 / chan0.value) - 1) * 10000
     PV = steinhart_temperature_C(R)
     
+    # Update PID values SP, PV, OP
     pid.SetPoint = SP
     pid.update(PV)
+    OP = pid.output
+    OP = max(min( int(OP), 100 ),0)
+    
+    # Start the output of the PID controller
+    p.start(OP)
     
     # Add x and y to lists
     xs.append(dt.datetime.now().strftime('%I:%M:%S %p'))
@@ -264,20 +266,20 @@ class PageThree(tk.Frame):
 print('PID controller is running..')
 def holder():    
     # Convert thermistor resistance to temperature for the point value and update the PID
-    pid.SetPoint = SP
-    get_PV()
-    pid.update(PV)
+    #pid.SetPoint = SP
+    #get_PV()
+    #pid.update(PV)
 
     # Define the PID output as an integer between 0-100 for PWM
-    OP = pid.output
-    OP = max(min( int(OP), 100 ),0)
+    #OP = pid.output
+    #OP = max(min( int(OP), 100 ),0)
 
     # Start the PWM output 
-    p.start(OP)
-    time.sleep(0.5)
+    #p.start(OP)
+    #time.sleep(0.5)
 
     # Show the animated plot created for the PID
-    ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
+    ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=500)
     plt.show()
 
     # Print the PID values
