@@ -110,7 +110,11 @@ style.use("ggplot")
 
 ###################  Animation Function  ######################
 
-def animate(i, xs, ys, y2):    
+def animate(i, xs, ys, y2):
+    
+    pid.SetPoint = SP
+    get_PV()
+    pid.update(PV)
     
     # Add x and y to lists
     xs.append(dt.datetime.now().strftime('%I:%M:%S %p'))
@@ -243,6 +247,8 @@ class PageThree(tk.Frame):
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
         button1.pack()
+        
+        
        
 
         canvas = FigureCanvasTkAgg(fig, self)
