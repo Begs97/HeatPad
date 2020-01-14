@@ -173,7 +173,7 @@ def main():
     root = Tk()
     gui = HeatPadapp(root)
     ani = animation.FuncAnimation(f,animate, fargs=(xs, ys, y2), interval=1000)
-    root.minsize(320, 240)
+    root.minsize(640, 480)
     root.resizable(0,0)
     root.mainloop()  
     
