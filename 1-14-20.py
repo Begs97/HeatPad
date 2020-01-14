@@ -28,6 +28,9 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
+f = Figure(figsize=(5,5), dpi=100)
+a = f.add_subplot(111)
+
 ####################  GPIO Configuration  #####################
 
 # Set GPIO to broadcom numbering and ignore warnings
