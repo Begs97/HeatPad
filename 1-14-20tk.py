@@ -149,8 +149,8 @@ def animate(i, xs, ys, y2):
 
 SP = 20
 P = 1.2
-I = 2
-D = 0.005
+I = 1
+D = 0.001
 pid = PID.PID(P, I, D)
 
 pid.SetPoint = SP
