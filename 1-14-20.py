@@ -28,9 +28,6 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 
-f = Figure(figsize=(5,5), dpi=100)
-a = f.add_subplot(111)
-
 ####################  GPIO Configuration  #####################
 
 # Set GPIO to broadcom numbering and ignore warnings
@@ -163,37 +160,33 @@ time_list = []
 
 
 print('PID controller is running..')
+    
+# Convert thermistor resistance to temperature for the point value and update the PID
+pid.SetPoint = SP
+R = ((26407 / chan0.value) - 1) * 10000
+PV = steinhart_temperature_C(R)
+pid.update(PV)
+    
+# Define the PID output as an integer between 0-100 for PWM
+OP = pid.output
+OP = max(min( int(OP), 100 ),0)
+    
+# Start the PWM output 
+p.start(OP)
+time.sleep(0.5)
+    
+# Show the animated plot created for the PID
+ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
+plt.show()
 
-def holder():
-    
-    # Convert thermistor resistance to temperature for the point value and update the PID
-    pid.SetPoint = SP
-    R = ((26407 / chan0.value) - 1) * 10000
-    PV = steinhart_temperature_C(R)
-    pid.update(PV)
-    
-    # Define the PID output as an integer between 0-100 for PWM
-    OP = pid.output
-    OP = max(min( int(OP), 100 ),0)
-    
-    # Start the PWM output 
-    p.start(OP)
-    time.sleep(0.5)
-    
-    # Show the animated plot created for the PID
-    ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
-    plt.show()
+# Print the PID values
+print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
 
-    # Print the PID values
-    print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
-
-    # Update the animation lists
-    pointvalue_list.append(PV)
-    setpoint_list.append(SP)
-    #time_list.append(sampling_i)
+# Update the animation lists
+pointvalue_list.append(PV)
+setpoint_list.append(SP)
+#time_list.append(sampling_i)
 
 
 ######################################
 
-While 1:
-    holder()
