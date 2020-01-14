@@ -112,8 +112,10 @@ style.use("ggplot")
 
 def animate(i, xs, ys, y2):
     
+    R = ((26407 / chan0.value) - 1) * 10000
+    PV = steinhart_temperature_C(R)
+    
     pid.SetPoint = SP
-    get_PV()
     pid.update(PV)
     
     # Add x and y to lists
