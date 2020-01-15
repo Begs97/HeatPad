@@ -180,7 +180,9 @@ class HeatPadapp(tk.Tk):
         # Set the Title, Icon, and zoom the window for linux
         tk.Tk.wm_title(self, "Heat Pad Controller")
         tk.Tk.iconbitmap(self, '@HeatPadIcon.xbm')
-        tk.Tk.attributes(self, '-zoomed')
+        #tk.Tk.attributes(self, '-zoomed')
+        w, h = tk.Tk.winfo_screenwidth(self), tk.Tk.winfo_screenheight(self)
+        tk.Tk.geometry(self, "%dx%d+0+0" % (w, h))
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
