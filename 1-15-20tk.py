@@ -260,15 +260,15 @@ class PageThree(tk.Frame):
         tk.Frame.__init__(self, parent)
         
         label = tk.Label(self, text="HeLLo", font=LARGE_FONT)
-        label.grid(row=0, column=1, pady=10,padx=10)
+        label.pack(pady=10,padx=10)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
-        button1.grid(row=2, column=1)
+        button1.pack()
         
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.draw()
-        canvas.get_tk_widget().grid(column=1, row=1, weight=3)       
+        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)       
       
 ###############################################################
 
