@@ -179,7 +179,7 @@ class HeatPadapp(tk.Tk):
         
         # Set the Title, Icon, and zoom the window for linux
         tk.Tk.wm_title(self, "Heat Pad Controller")
-        tk.Tk.iconbitmap(self, '@HeatPadIcon.gif')
+        tk.Tk.iconbitmap(self, '@HeatPadIcon.xbm')
         tk.Tk.attributes(self, '-zoomed')
         
         container = tk.Frame(self)
@@ -258,6 +258,8 @@ class PageThree(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        
+        tk.Tk.attributes(self, '-zoomed')
         
         label = tk.Label(self, text="HeLLo", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
