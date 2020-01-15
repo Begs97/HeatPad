@@ -258,7 +258,7 @@ class PageThree(tk.Frame):
         tk.Frame.__init__(self, parent)
         global SP, PV, OP
         
-        label = tk.Label(self, text="Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP), font=LARGE_FONT)
+        label = tk.Label(self, text="HeLLo", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
         button1 = ttk.Button(self, text="Back to Home",
