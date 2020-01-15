@@ -116,7 +116,6 @@ style.use("ggplot")
 ###################  Animation Function  ######################
 
 def animate(i, xs, ys, y2):
-    global PV
     # Convert thermistor resistance to temperature for the point value
     R = ((26407 / chan0.value) - 1) * 10000
     PV = steinhart_temperature_C(R)
@@ -261,11 +260,8 @@ class PageThree(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        print(PV)
-        #pv_var = tk.StringVar()
-        #pv.var.set(PV)
         label = tk.Label(self, text="PV:", font=LARGE_FONT)
-        label.pack(side=tk.LEFT, pady=2,padx=2)
+        label.pack(side=(tk.LEFT, tk.TOP), pady=2,padx=2)
         
         label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
