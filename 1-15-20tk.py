@@ -145,7 +145,7 @@ def animate(i, xs, ys, y2):
     ax.plot(xs, y2, 'r--', label='SP')    
     
     # set the limit on the y-axis
-    plt.ylim(20,70)
+    plt.ylim(20,50)
 
     # Format plot
     plt.xticks(rotation=45, ha='right')
@@ -261,10 +261,10 @@ class PageThree(tk.Frame):
         tk.Frame.__init__(self, parent)
         
         label = tk.Label(self, text="PV:", font=LARGE_FONT)
-        label.grid(side=(row=0, column=0, pady=2,padx=2)
+        label.pack(pady=2,padx=2)
         
         label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
-        label1.grid(row=0, column=1, pady=2,padx=2)
+        label1.pack(pady=2,padx=2)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
