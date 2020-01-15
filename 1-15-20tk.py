@@ -38,9 +38,11 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(12, GPIO.OUT)
 p = GPIO.PWM(12,100)
 
-# Set Pins 22 & 23 as inputs for the pushbuttons
+# Set Pins 17, 22, 23, and 27 as inputs for the pushbuttons
+GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 #####################  ADC Configuration  #####################
 
@@ -176,6 +178,7 @@ class HeatPadapp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         
         tk.Tk.wm_title(self, "Heat Pad Controller")
+        tk.TK.state('zoomed')
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
