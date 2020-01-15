@@ -178,7 +178,7 @@ class HeatPadapp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         
         tk.Tk.wm_title(self, "Heat Pad Controller")
-        tk.TK.state('zoomed')
+        tk.TK.state(self, 'zoomed')
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -274,7 +274,7 @@ class PageThree(tk.Frame):
 print('PID controller is running..')
     
 # Print the PID values
-print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
+#print("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(SP, PV, OP))
 
 ###############################################################
 
