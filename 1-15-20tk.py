@@ -181,8 +181,7 @@ class HeatPadapp(tk.Tk):
         tk.Tk.wm_title(self, "Heat Pad Controller")
         tk.Tk.iconbitmap(self, '@HeatPadIcon.xbm')
         #tk.Tk.attributes(self, '-zoomed')
-        w, h = tk.Tk.winfo_screenwidth(self), tk.Tk.winfo_screenheight(self)
-        tk.Tk.geometry(self, "%dx%d+0+0" % (w, h))
+        tk.Tk.geometry(self, "720x480")
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
@@ -261,8 +260,14 @@ class PageThree(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        label = tk.Label(self, text="HeLLo", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
+        global PV
+        pv_var = tk.StringVar()
+        pv.var.set(PV)
+        label = tk.Label(self, text="PV:", font=LARGE_FONT)
+        label.pack(side=tk.LEFT, pady=2,padx=2)
+        
+        label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
+        label1.pack(pady=10,padx=10)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
