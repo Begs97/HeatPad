@@ -178,7 +178,7 @@ class HeatPadapp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         
         tk.Tk.wm_title(self, "Heat Pad Controller")
-        tk.TK.state(self, 'zoomed')
+        tk.Tk.state(self, 'zoomed')
         
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
