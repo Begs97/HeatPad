@@ -70,6 +70,10 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 def cb17(channel):
     print("GPIO 17 Detected")
 
+#Class increment():
+    #def __init__(self, *args, **kwargs):
+        #increment_mode = 1
+        
 def increase_sp_callback(channel):
     global SP
     if SP == 69:
@@ -107,6 +111,10 @@ xs = []
 ys = []
 y2 = []
 
+# Set the text size for x and y ticks
+matplotlib.rc('xtick', labelsize=12)
+matplotlib.rc('ytick', labelsize=12)
+
 #################### Style for Plotting #######################
 
 LARGE_FONT= ("Verdana", 12)
@@ -141,8 +149,9 @@ def animate(i, xs, ys, y2):
 
     # Draw x and y lists
     ax.clear()
-    ax.plot(xs, ys, label='PV')
-    ax.plot(xs, y2, 'r--', label='SP')    
+    ax.plot(xs, ys, '-b', label='PV = %.2f\u2103' %PV)
+    ax.plot(xs, y2, 'r--', label='SP = %.2f\u2103' %SP)
+    ax.legend(framealpha=1, frameon=True, loc = 'upper left', fontsize=12)
     
     # set the limit on the y-axis
     plt.ylim(20,50)
@@ -150,8 +159,8 @@ def animate(i, xs, ys, y2):
     # Format plot
     plt.xticks(rotation=45, ha='right')
     plt.subplots_adjust(bottom=0.30)
-    plt.title('ADS1115 Temperature over Time')
-    plt.ylabel('Temperature (deg C)')
+    plt.title('Heat Pad Controller', fontsize=18)
+    plt.ylabel("Temperature \u2103", fontsize=16)
     
 
 ##############  PID Controller Configuration #################
@@ -260,11 +269,11 @@ class PageThree(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
-        label = tk.Label(self, text="PV:", font=LARGE_FONT)
-        label.pack(pady=2,padx=2)
+        #label = tk.Label(self, text="PV:", font=LARGE_FONT)
+        #label.pack(pady=2,padx=2)
         
-        label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
-        label1.pack(pady=2,padx=2)
+        #label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
+        #label1.pack(pady=2,padx=2)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
