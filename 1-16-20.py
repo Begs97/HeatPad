@@ -116,11 +116,11 @@ def cb27(channel):
     global IM
     if increment_mode == 1:
         increment_mode = 2
-        IM = " ^"
+        IM = "    ^"
         print("Increment Mode Changed to 0.10")
     elif increment_mode == 2:
         increment_mode = 3
-        IM = "  ^"
+        IM = "     ^"
         print("Increment Mode Changed to 0.01")
     elif increment_mode == 3:
         increment_mode = 1
@@ -181,7 +181,7 @@ def animate(i, xs, ys, y2):
     ax.clear()
     ax.plot(xs, ys, '-b', label='PV = %.2f\u2103' %PV)
     ax.plot(xs, y2, 'r--', label='SP = %.2f\u2103' %SP)
-    ax.plot([],[],' ', label='      %s' %IM)
+    ax.plot([],[],' ', label='          %s' %IM)
     ax.legend(framealpha=1, frameon=True, loc = 'upper left', fontsize=12)
     
     # set the limit on the y-axis
