@@ -67,40 +67,63 @@ def steinhart_temperature_C(r, Ro=10000.0, To=25.0, beta=3950.0):
 
 #################  Push Button Callbacks  #####################
 
-def cb17(channel):
-    print("GPIO 17 Detected")
-
-#Class increment():
-    #def __init__(self, *args, **kwargs):
-        #increment_mode = 1
+Class increment():
+    def __init__(self, *args, **kwargs):
+        global SP
+        increment_mode = 1
         
-def increase_sp_callback(channel):
-    global SP
-    if SP == 69:
-        print("Set Point is at max value")
-        print("SP=", SP)
-    else:
-        SP += 1
-        print("increase detected")
-        print("SP=", SP)
-
-def decrease_sp_callback(channel):
-    global SP
-    if SP == 20:
-        print("Set Point is at minimum value")
-        print("SP=", SP)
-    else:   
-        SP -= 1
-        print("decrease detected")
-        print("SP=", SP)
-
-def cb27(channel):
-    print("GPIO 27 Detected")
+        def cb17(channel):
+            print("GPIO 17 Detected")
         
-GPIO.add_event_detect(17, GPIO.FALLING, callback=cb17)
-GPIO.add_event_detect(22, GPIO.FALLING, callback=increase_sp_callback)
-GPIO.add_event_detect(23, GPIO.FALLING, callback=decrease_sp_callback)
-GPIO.add_event_detect(27, GPIO.FALLING, callback=cb27)
+        def increase_sp_callback(channel):         
+            if SP >= 69:
+                print("Set Point is at max value")
+                print("SP=", SP)
+            elif increment_mode = 1:
+                SP += 1
+                print("increase detected")
+                print("SP=", SP)
+            elif increment_mode = 2:
+                SP += .1
+                print("increase detected")
+                print("SP=", SP)
+            elif increment_mode = 3:
+                SP += .01
+                print("increase detected")
+                print("SP=", SP)
+
+        def decrease_sp_callback(channel):
+            if SP <= 20:
+                print("Set Point is at minimum value")
+                print("SP=", SP)
+            elif increment_mode = 1:
+                SP -= 1
+                print("decrease detected")
+                print("SP=", SP)
+            elif increment_mode = 2:
+                SP -= .1
+                print("decrease detected")
+                print("SP=", SP)
+            elif increment_mode = 3:
+                SP -= .01
+                print("decrease detected")
+                print("SP=", SP)
+
+        def cb27(channel):
+            if increment_mode = 1:
+                increment_mode = 2
+                print("Increment Mode Changed to 0.10")
+            elif increment_mode = 2:
+                increment_mode = 3
+                print("Increment Mode Changed to 0.01")
+            elif increment_mode = 3:
+                increment_mode = 1
+                print("Increment Mode Changed to 1.00")
+
+        GPIO.add_event_detect(17, GPIO.FALLING, callback=cb17)
+        GPIO.add_event_detect(22, GPIO.FALLING, callback=increase_sp_callback)
+        GPIO.add_event_detect(23, GPIO.FALLING, callback=decrease_sp_callback)
+        GPIO.add_event_detect(27, GPIO.FALLING, callback=cb27)
 
 ################  Create Figure for Plotting  #################
 
