@@ -326,4 +326,5 @@ print('PID controller is running..')
 app = HeatPadapp()
 ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, y2), interval=1000)
 app.mainloop()
+GPIO.cleanup()
 
