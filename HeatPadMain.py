@@ -197,9 +197,9 @@ def animate(i, xs, ys, y2):
 ##############  PID Controller Configuration #################
 
 SP = 20
-P = 55
+P = 75
 I = 0
-D = 0
+D = 0.005
 pid = PID.PID(P, I, D)
 
 pid.SetPoint = SP
