@@ -238,7 +238,7 @@ class HeatPadapp(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
         
-        self.show_frame(StartPage)
+        self.show_frame(PageThree)
         
     def show_frame(self, cont):
         
@@ -299,12 +299,6 @@ class PageThree(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        
-        #label = tk.Label(self, text="PV:", font=LARGE_FONT)
-        #label.pack(pady=2,padx=2)
-        
-        #label1 = tk.Label(self, text="HeLLo", font=LARGE_FONT)
-        #label1.pack(pady=2,padx=2)
 
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.show_frame(StartPage))
